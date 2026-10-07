@@ -86,7 +86,7 @@ TEST_DATABASE_URL=postgresql://.../dfw_events_test pnpm test
 2. Add a service from this GitHub repo. Variables:
    - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`
    - `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, optional `SEATGEEK_CLIENT_ID`
-   - optional `ANTHROPIC_API_KEY` (lets Big Tex answer questions with Claude)
+   - optional `ANTHROPIC_API_KEY` (lets Big Tex answer questions with Claude), capped by `AI_DAILY_LIMIT` (default 200/day) and `AI_USER_DAILY_LIMIT` (default 15/user/day). Also set a monthly spend limit in the Anthropic Console as a hard backstop.
    - optional `BOT_LOG_CHANNEL_ID` (private `#bot-logs` channel for poll and job errors)
 3. `railway.json` builds with `pnpm build` and starts with `pnpm start`, which runs `prisma migrate deploy` before booting.
 4. Once: `railway run pnpm db:seed` and `railway run pnpm register --global`.

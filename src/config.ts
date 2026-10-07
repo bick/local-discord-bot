@@ -8,6 +8,9 @@ const EnvSchema = z.object({
   SEATGEEK_CLIENT_ID: z.string().min(1).optional(),
   /** Optional: lets Big Tex answer questions with Claude. Without it he only sends canned greetings. */
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  /** Max Claude answers per day across all servers, and per user. Reset at midnight Central. */
+  AI_DAILY_LIMIT: z.coerce.number().int().min(0).default(200),
+  AI_USER_DAILY_LIMIT: z.coerce.number().int().min(0).default(15),
   DATABASE_URL: z.string().url(),
   TZ: z.literal("America/Chicago").default("America/Chicago"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),

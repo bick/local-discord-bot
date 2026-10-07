@@ -1,6 +1,8 @@
 import type { Message } from "discord.js";
 import { logger } from "../logger.js";
-import { askBigTex } from "./brain.js";
+import { config } from "../config.js";
+import { AiLimiter, LIMIT_REPLIES } from "./aiLimits.js";
+import { askBigTex, brainEnabled } from "./brain.js";
 
 /** Big Tex is the 55-foot cowboy at the State Fair of Texas. He talks like it. */
 export const GREETINGS: readonly string[] = [
@@ -90,6 +92,12 @@ export function stripMentions(content: string): string {
   return content.replace(/<@[!&]?\d+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+let limiter: AiLimiter | undefined;
+function aiLimiter(): AiLimiter {
+  limiter ??= new AiLimiter(config().AI_DAILY_LIMIT, config().AI_USER_DAILY_LIMIT);
+  return limiter;
+}
+
 /** The bot message being replied to, if any, so Big Tex can follow the thread. */
 async function repliedBotText(message: Message): Promise<string | undefined> {
   if (!message.reference?.messageId) return undefined;
@@ -107,13 +115,19 @@ export async function handleGreeting(message: Message): Promise<void> {
 
   const text = stripMentions(message.content);
   let content: string | null = null;
-  if (!isBareGreeting(text)) {
-    if (message.channel.isSendable()) await message.channel.sendTyping().catch(() => undefined);
-    content = await askBigTex(text, {
-      guildId: message.guildId,
-      askedBy: message.member?.displayName ?? message.author.displayName,
-      replyingTo: await repliedBotText(message),
-    });
+  if (!isBareGreeting(text) && brainEnabled()) {
+    const allowance = aiLimiter().check(message.author.id);
+    if (allowance !== "ok") {
+      content = LIMIT_REPLIES[allowance];
+    } else {
+      aiLimiter().record(message.author.id); // count attempts, not just successes
+      if (message.channel.isSendable()) await message.channel.sendTyping().catch(() => undefined);
+      content = await askBigTex(text, {
+        guildId: message.guildId,
+        askedBy: message.member?.displayName ?? message.author.displayName,
+        replyingTo: await repliedBotText(message),
+      });
+    }
   }
   content ??= pickGreeting();
 
