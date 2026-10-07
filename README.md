@@ -39,7 +39,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
 | `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
-| `@Big Tex hi` (or "hi" in a DM) | everyone | One of 50 Big Tex greetings |
+| `@Big Tex` anything (or a DM) | everyone | One of 50 Big Tex greetings |
 
 ## Setup
 

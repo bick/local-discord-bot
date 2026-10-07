@@ -55,14 +55,6 @@ export const GREETINGS: readonly string[] = [
   "Hey there! Tell your friends Big Tex said hi. Tell 'em loud, I like it loud.",
 ];
 
-const GREETING = /^(hi+|hii+|hello+|hey+|heya|hiya|howdy|yo+|sup|wassup|what'?s up|good (morning|afternoon|evening)|greetings)\b[\s!.?,]*(big ?tex|tex|there|y'?all|partner)?[\s!.?,]*$/i;
-
-/** True for a short hello like "hi", "Hey Tex!", "howdy y'all". Mentions are stripped first. */
-export function isGreeting(content: string): boolean {
-  const text = content.replace(/<@!?\d+>/g, "").trim();
-  return text.length <= 40 && GREETING.test(text);
-}
-
 let lastIndex = -1;
 /** A random greeting that isn't the same as the last one. */
 export function pickGreeting(random: () => number = Math.random): string {
@@ -76,15 +68,17 @@ export function pickGreeting(random: () => number = Math.random): string {
 const COOLDOWN_MS = 10_000;
 const lastReplyAt = new Map<string, number>();
 
-/**
- * Reply to "@Big Tex hi" in a server or "hi" in a DM. Without the privileged Message Content intent,
- * Discord only delivers message text for mentions and DMs, which is exactly when we want to answer.
- */
+/** True when the message is aimed at the bot: a DM, an @mention (including reply pings), or an @ of its role. */
+export function isAddressedToBot(message: Message): boolean {
+  if (!message.inGuild()) return true;
+  if (message.mentions.users.has(message.client.user.id)) return true;
+  const botRole = message.guild.members.me?.roles.botRole;
+  return botRole != null && message.mentions.roles.has(botRole.id);
+}
+
+/** Answer anyone who @s Big Tex (or DMs him) with a random greeting. */
 export async function handleGreeting(message: Message): Promise<void> {
-  if (message.author.bot) return;
-  const me = message.client.user;
-  const addressed = message.inGuild() ? message.mentions.users.has(me.id) : true;
-  if (!addressed || !isGreeting(message.content)) return;
+  if (message.author.bot || message.system || !isAddressedToBot(message)) return;
 
   const now = Date.now();
   if (now - (lastReplyAt.get(message.author.id) ?? 0) < COOLDOWN_MS) return;
