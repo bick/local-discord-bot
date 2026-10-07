@@ -1,5 +1,6 @@
 import type { Message } from "discord.js";
 import { logger } from "../logger.js";
+import { askBigTex } from "./brain.js";
 
 /** Big Tex is the 55-foot cowboy at the State Fair of Texas. He talks like it. */
 export const GREETINGS: readonly string[] = [
@@ -76,7 +77,27 @@ export function isAddressedToBot(message: Message): boolean {
   return botRole != null && message.mentions.roles.has(botRole.id);
 }
 
-/** Answer anyone who @s Big Tex (or DMs him) with a random greeting. */
+// A hello plus at most three more words ("hey there neighbor", "good morning big tex"). Longer messages are conversation.
+const BARE_GREETING = /^(hi+|hey+|hello+|howdy|yo+|sup|hiya|heya|greetings|good (morning|afternoon|evening))\b[\s,.!]*([\w']+[\s,.!]*){0,3}$/i;
+
+/** True when the text (mentions already stripped) is just a hello, like "hey there neighbor". */
+export function isBareGreeting(text: string): boolean {
+  return text === "" || BARE_GREETING.test(text);
+}
+
+/** Message text with user/role mentions removed and whitespace collapsed. */
+export function stripMentions(content: string): string {
+  return content.replace(/<@[!&]?\d+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** The bot message being replied to, if any, so Big Tex can follow the thread. */
+async function repliedBotText(message: Message): Promise<string | undefined> {
+  if (!message.reference?.messageId) return undefined;
+  const ref = await message.fetchReference().catch(() => null);
+  return ref?.author.id === message.client.user.id ? ref.content : undefined;
+}
+
+/** Answer anyone who @s Big Tex (or DMs him): canned hellos for greetings, Claude for everything else. */
 export async function handleGreeting(message: Message): Promise<void> {
   if (message.author.bot || message.system || !isAddressedToBot(message)) return;
 
@@ -84,12 +105,25 @@ export async function handleGreeting(message: Message): Promise<void> {
   if (now - (lastReplyAt.get(message.author.id) ?? 0) < COOLDOWN_MS) return;
   lastReplyAt.set(message.author.id, now);
 
-  const content = pickGreeting();
+  const text = stripMentions(message.content);
+  let content: string | null = null;
+  if (!isBareGreeting(text)) {
+    if (message.channel.isSendable()) await message.channel.sendTyping().catch(() => undefined);
+    content = await askBigTex(text, {
+      guildId: message.guildId,
+      askedBy: message.member?.displayName ?? message.author.displayName,
+      replyingTo: await repliedBotText(message),
+    });
+  }
+  content ??= pickGreeting();
+
+  // Never let a generated reply ping anyone.
+  const allowedMentions = { parse: [], repliedUser: false };
   try {
-    await message.reply({ content, allowedMentions: { repliedUser: false } });
+    await message.reply({ content, allowedMentions });
   } catch (err) {
     // Replies need Read Message History; fall back to a plain message.
-    logger.debug({ err }, "greeting reply failed; sending plainly");
-    if (message.channel.isSendable()) await message.channel.send(content).catch(() => undefined);
+    logger.debug({ err }, "reply failed; sending plainly");
+    if (message.channel.isSendable()) await message.channel.send({ content, allowedMentions }).catch(() => undefined);
   }
 }

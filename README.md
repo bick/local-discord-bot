@@ -37,7 +37,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
 | `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
-| `@Big Tex` anything (or a DM) | everyone | One of 50 Big Tex greetings |
+| `@Big Tex` anything (or a DM) | everyone | Bare hellos get one of 50 canned greetings; questions get an in-character answer from Claude (needs `ANTHROPIC_API_KEY`), using the upcoming events list for "what's going on" questions |
 
 ## Setup
 
@@ -86,6 +86,7 @@ TEST_DATABASE_URL=postgresql://.../dfw_events_test pnpm test
 2. Add a service from this GitHub repo. Variables:
    - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`
    - `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, optional `SEATGEEK_CLIENT_ID`
+   - optional `ANTHROPIC_API_KEY` (lets Big Tex answer questions with Claude)
    - optional `BOT_LOG_CHANNEL_ID` (private `#bot-logs` channel for poll and job errors)
 3. `railway.json` builds with `pnpm build` and starts with `pnpm start`, which runs `prisma migrate deploy` before booting.
 4. Once: `railway run pnpm db:seed` and `railway run pnpm register --global`.

@@ -6,6 +6,8 @@ const EnvSchema = z.object({
   DISCORD_DEV_GUILD_ID: z.string().optional(),
   /** Optional: without it the bot only ingests calendar feeds. */
   SEATGEEK_CLIENT_ID: z.string().min(1).optional(),
+  /** Optional: lets Big Tex answer questions with Claude. Without it he only sends canned greetings. */
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
   DATABASE_URL: z.string().url(),
   TZ: z.literal("America/Chicago").default("America/Chicago"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
