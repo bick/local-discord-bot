@@ -38,13 +38,14 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
 | `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
+| `@Big Tex hi` (or "hi" in a DM) | everyone | One of 50 Big Tex greetings |
 
 ## Setup
 
 ### 1. Discord application
 
 1. Create an app at <https://discord.com/developers/applications>, add a Bot, copy the token (`DISCORD_TOKEN`) and Application ID (`DISCORD_CLIENT_ID`).
-2. No privileged intents are needed (the bot only uses the `Guilds` intent).
+2. No privileged intents are needed. The bot uses `Guilds`, `GuildMessages` and `DirectMessages`; without Message Content it only sees the text of messages that mention it or DM it, which is all the greeting needs.
 3. Invite it with scopes `bot applications.commands` and permissions **View Channels, Send Messages, Send Messages in Threads, Embed Links, Create Public Threads, Manage Events** (permissions integer `317827599360`):
    `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=317827599360`
 
