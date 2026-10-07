@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Source {
+  SEATGEEK
+  CALENDAR
+}
+
+enum Category {
+  FESTIVAL
+  CONCERT
+  SPORTS
+  FAMILY
+  FOOD
+  OTHER
+}
+
+enum RsvpStatus {
+  GOING
+  INTERESTED
+  NOT_FOR_ME
+}
+
+model CalendarFeed {
+  id          String    @id @default(cuid())
+  name        String
+  url         String    @unique
+  format      String // "ical" | "rss"
+  defaultCity String?
+  trustWeight Int       @default(50) // 0 to 100, boosts bigScore
+  enabled     Boolean   @default(true)
+  lastFetched DateTime?
+  lastError   String?
+  events      Event[]
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  source      Source
+  sourceId    String
+  feedId      String?
+  feed        CalendarFeed? @relation(fields: [feedId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  category    Category      @default(OTHER)
+  venueName   String?
+  city        String?
+  lat         Float?
+  lng         Float?
+  startsAt    DateTime
+  endsAt      DateTime?
+  allDay      Boolean       @default(false)
+  url         String
+  imageUrl    String?
+  priceMin    Decimal?
+  popularity  Float? // SeatGeek popularity/score, 0..1
+  bigScore    Int           @default(0)
+  cancelled   Boolean       @default(false)
+  missedPolls Int           @default(0) // consecutive SeatGeek polls this event was absent from
+  dedupeKey   String // normalized title + day + venue
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  posts       Post[]
+  rsvps       Rsvp[]
+
+  @@unique([source, sourceId])
+  @@index([startsAt])
+  @@index([dedupeKey])
+}
+
+model Post {
+  id               String    @id @default(cuid())
+  eventId          String
+  event            Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guildId          String
+  channelId        String
+  messageId        String
+  threadId         String?
+  scheduledEventId String?
+  postedAt         DateTime  @default(now())
+  syncedAt         DateTime  @default(now()) // last time the message was rendered from the Event row
+  reminderSentAt   DateTime?
+  nudgeSentAt      DateTime?
+
+  @@unique([eventId, guildId])
+  @@index([guildId, postedAt])
+}
+
+model Rsvp {
+  id        String     @id @default(cuid())
+  eventId   String
+  event     Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guildId   String
+  userId    String
+  status    RsvpStatus
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([eventId, userId])
+  @@index([guildId, eventId])
+}
+
+model GuildSettings {
+  guildId         String     @id
+  eventsChannelId String?
+  minBigScore     Int        @default(60)
+  categories      Category[]
+  maxPostsPerDay  Int        @default(5)
+  digestEnabled   Boolean    @default(true)
+}

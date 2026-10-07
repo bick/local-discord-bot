@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:calendarEvent="https://www.civicplus.com/Calendar" xmlns:ev="http://purl.org/rss/1.0/modules/event/">
+<channel>
+<title>City Calendar</title>
+<link>https://www.example.gov/calendar.aspx</link>
+<description>Events</description>
+<item>
+  <title>Main Street Fest</title>
+  <link>https://www.example.gov/Calendar.aspx?EID=1</link>
+  <guid>https://www.example.gov/Calendar.aspx?EID=1</guid>
+  <description>Big street festival</description>
+  <pubDate>Mon, 01 Jun 2026 12:00:00 GMT</pubDate>
+  <calendarEvent:EventDates>October 16, 2026</calendarEvent:EventDates>
+  <calendarEvent:EventTimes>6:00 PM - 11:00 PM</calendarEvent:EventTimes>
+  <calendarEvent:Location>Main Street, Grapevine, TX</calendarEvent:Location>
+</item>
+<item>
+  <title>Holiday Lights</title>
+  <link>https://www.example.gov/Calendar.aspx?EID=2</link>
+  <guid>https://www.example.gov/Calendar.aspx?EID=2</guid>
+  <ev:startdate>2026-10-20</ev:startdate>
+  <ev:enddate>2026-10-23</ev:enddate>
+</item>
+<item>
+  <title>No date at all</title>
+  <link>https://www.example.gov/Calendar.aspx?EID=3</link>
+  <pubDate>Mon, 01 Jun 2026 12:00:00 GMT</pubDate>
+</item>
+</channel>
+</rss>

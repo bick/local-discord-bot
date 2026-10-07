@@ -1,0 +1,85 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//dfw-events-bot//DFW annual festivals//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:DFW Annual Festivals (curated)
+X-WR-TIMEZONE:America/Chicago
+COMMENT:Hand-maintained list of big annual DFW traditions that lack a usable feed. Only add dates confirmed on an official page. DTEND for all-day events is exclusive (the day after the last day).
+BEGIN:VEVENT
+UID:state-fair-of-texas-2026@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;VALUE=DATE:20260925
+DTEND;VALUE=DATE:20261019
+SUMMARY:State Fair of Texas
+LOCATION:Fair Park, 3921 Martin Luther King Jr Blvd, Dallas, TX
+DESCRIPTION:Big Tex, fried everything, the midway, and the Texas Star Ferris wheel. 24 days at Fair Park.
+URL:https://bigtex.com/
+CATEGORIES:Festival
+END:VEVENT
+BEGIN:VEVENT
+UID:red-river-rivalry-2026@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;TZID=America/Chicago:20261010T143000
+DTEND;TZID=America/Chicago:20261010T180000
+SUMMARY:Red River Rivalry: Texas vs. Oklahoma
+LOCATION:Cotton Bowl, Fair Park, Dallas, TX
+DESCRIPTION:Texas and OU split the Cotton Bowl down the 50 yard line during the State Fair. 2:30 PM CT kickoff.
+URL:https://bigtex.com/how-to-plan-for-the-2026-allstate-red-river-rivalry-things-to-know-before-you-go/
+CATEGORIES:Sports
+END:VEVENT
+BEGIN:VEVENT
+UID:autumn-at-the-arboretum-2026@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;VALUE=DATE:20260919
+DTEND;VALUE=DATE:20261102
+SUMMARY:Autumn at the Arboretum: Harvest Hues
+LOCATION:Dallas Arboretum, 8525 Garland Rd, Dallas, TX
+DESCRIPTION:The Dallas Arboretum's fall festival with the famous pumpkin village.
+URL:https://www.dallasarboretum.org/autumn-at-the-arboretum/
+CATEGORIES:Family
+END:VEVENT
+BEGIN:VEVENT
+UID:arts-goggle-2026@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;VALUE=DATE:20261024
+DTEND;VALUE=DATE:20261025
+SUMMARY:ArtsGoggle
+LOCATION:Magnolia Ave, Near Southside, Fort Worth, TX
+DESCRIPTION:Fort Worth's biggest art festival takes over Magnolia Avenue with artists, live music, and food.
+URL:https://www.nearsouthsidefw.org/artsgoggle.html
+CATEGORIES:Festival
+END:VEVENT
+BEGIN:VEVENT
+UID:fort-worth-stock-show-rodeo-2027@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;VALUE=DATE:20270115
+DTEND;VALUE=DATE:20270207
+SUMMARY:Fort Worth Stock Show & Rodeo
+LOCATION:Dickies Arena and Will Rogers Memorial Center, Fort Worth, TX
+DESCRIPTION:The 130th Fort Worth Stock Show & Rodeo: 23 days of rodeo, livestock, carnival, and shopping.
+URL:https://www.fwssr.com/
+CATEGORIES:Festival
+END:VEVENT
+BEGIN:VEVENT
+UID:main-street-fest-2027@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;VALUE=DATE:20270514
+DTEND;VALUE=DATE:20270517
+SUMMARY:Main Street Fest
+LOCATION:Historic Main Street, Grapevine, TX
+DESCRIPTION:Grapevine's 43rd Main Street Fest: craft beer, live music, carnival, and food.
+URL:https://www.grapevinetexasusa.com/main-street-fest/
+CATEGORIES:Festival
+END:VEVENT
+BEGIN:VEVENT
+UID:grapefest-2027@dfw-events-bot
+DTSTAMP:20261007T000000Z
+DTSTART;VALUE=DATE:20270916
+DTEND;VALUE=DATE:20270920
+SUMMARY:GrapeFest
+LOCATION:Historic Main Street, Grapevine, TX
+DESCRIPTION:One of the largest wine festivals in the Southwest, on Grapevine's Main Street.
+URL:https://www.grapevinetexasusa.com/grapefest/
+CATEGORIES:Festival
+END:VEVENT
+END:VCALENDAR

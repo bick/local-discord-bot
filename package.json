@@ -1,0 +1,41 @@
+{
+  "name": "dfw-events-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Discord bot that finds big Dallas/Fort Worth events and gets people to go together",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "start": "prisma migrate deploy && node dist/src/index.js",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "register": "tsx scripts/register-commands.ts",
+    "poll:once": "tsx scripts/poll-once.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "croner": "^10.0.1",
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0",
+    "discord.js": "^14.27.0",
+    "node-ical": "^0.27.3",
+    "pino": "^10.4.0",
+    "prisma": "^6.19.3",
+    "rss-parser": "^3.13.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
