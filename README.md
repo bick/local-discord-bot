@@ -33,6 +33,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/events [category] [city]` | everyone | Next 10 big events |
 | `/weekend` | everyone | Friday through Sunday |
 | `/topic [category]` | everyone | A fun conversation starter (would you rather, hot takes, hypotheticals, nostalgia, get to know you) |
+| ⭐ reactions | everyone | A message that gets 7 or more ⭐ reactions is forwarded to `#hall-of-fame` (once). Create a text channel with that exact name to turn it on |
 | `/going` | everyone | Your Going / Interested events (private reply) |
 | `/setup [channel] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |

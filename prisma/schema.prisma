@@ -114,3 +114,11 @@ model GuildSettings {
   maxPostsPerDay  Int        @default(5)
   digestEnabled   Boolean    @default(true)
 }
+
+model HallOfFameEntry {
+  messageId    String   @id // the starred message
+  guildId      String
+  channelId    String
+  hofMessageId String? // the forward in #hall-of-fame
+  createdAt    DateTime @default(now())
+}

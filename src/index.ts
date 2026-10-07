@@ -7,6 +7,7 @@ import { logger } from "./logger.js";
 import { alert } from "./discord/alerts.js";
 import { handleRsvpButton } from "./discord/buttons.js";
 import { handleGreeting } from "./discord/greetings.js";
+import { handleStarReaction } from "./discord/hallOfFame.js";
 import { handleRoleComponent } from "./discord/roles.js";
 import { commandsByName } from "./discord/commands/index.js";
 import { ensureBotName } from "./discord/profile.js";
@@ -19,8 +20,9 @@ if (!cfg.SEATGEEK_CLIENT_ID) logger.warn("SEATGEEK_CLIENT_ID not set; ingesting 
 
 // GuildMessages/DirectMessages are not privileged: we only get message text when the bot is mentioned or DMed.
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
-  partials: [Partials.Channel], // DM channels aren't cached, so DMs arrive as partials
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.DirectMessages],
+  // DM channels aren't cached, so DMs arrive as partials; reactions on messages from before boot arrive as partials too.
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
 });
 
 async function onInteraction(interaction: Interaction): Promise<void> {
@@ -89,6 +91,8 @@ client.once(Events.ClientReady, async (c) => {
 
 client.on(Events.InteractionCreate, (i) => void onInteraction(i));
 client.on(Events.MessageCreate, (m) => void handleGreeting(m).catch((err) => logger.warn({ err }, "greeting failed")));
+
+client.on(Events.MessageReactionAdd, (r) => void handleStarReaction(r).catch((err) => logger.warn({ err }, "hall of fame failed")));
 
 client.on(Events.GuildCreate, async (guild) => {
   await prisma.guildSettings.upsert({ where: { guildId: guild.id }, create: { guildId: guild.id }, update: {} });
