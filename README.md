@@ -32,6 +32,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 |---|---|---|
 | `/events [category] [city]` | everyone | Next 10 big events |
 | `/weekend` | everyone | Friday through Sunday |
+| `/topic [category]` | everyone | A fun conversation starter (would you rather, hot takes, hypotheticals, nostalgia, get to know you) |
 | `/going` | everyone | Your Going / Interested events (private reply) |
 | `/setup [channel] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
