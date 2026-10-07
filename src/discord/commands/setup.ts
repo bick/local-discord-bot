@@ -64,7 +64,7 @@ export const setup: Command = {
     await interaction.reply({
       flags: MessageFlags.Ephemeral,
       content: [
-        "**DFW Events settings**",
+        "**Big Tex settings**",
         `Channel: ${s.eventsChannelId ? `<#${s.eventsChannelId}>` : "not set (use `/setup channel:#events`)"}`,
         `Min score: ${s.minBigScore}`,
         `Max posts per day: ${s.maxPostsPerDay}`,

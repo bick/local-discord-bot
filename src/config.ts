@@ -9,6 +9,9 @@ const EnvSchema = z.object({
   TZ: z.literal("America/Chicago").default("America/Chicago"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
   BOT_LOG_CHANNEL_ID: z.string().optional(),
+  BOT_NAME: z.string().min(2).max(32).default("Big Tex"),
+  /** Comma-separated Discord user IDs allowed to change the bot's profile. Defaults to the app owner / team. */
+  BOT_OWNER_IDS: z.string().optional(),
   PORT: z.coerce.number().int().positive().optional(),
   POLL_CRON: z.string().default("0 */6 * * *"),
   DIGEST_CRON: z.string().default("0 17 * * 4"), // Thursday 5pm

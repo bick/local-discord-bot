@@ -1,6 +1,6 @@
-# DFW Events Discord Bot
+# Big Tex: DFW Events Discord Bot
 
-Finds big events around Dallas/Fort Worth (State Fair, Fort Worth Stock Show, Mavs/Stars/Cowboys games, big concerts), posts them to an `#events` channel, and nudges people to actually go together: RSVP buttons, a carpool thread per event, native Discord Scheduled Events, a Thursday "this weekend" digest, and day-before reminders.
+Big Tex finds big events around Dallas/Fort Worth (State Fair, Fort Worth Stock Show, Mavs/Stars/Cowboys games, big concerts), posts them to an `#events` channel, and nudges people to actually go together: RSVP buttons, a carpool thread per event, native Discord Scheduled Events, a Thursday "this weekend" digest, and day-before reminders.
 
 TypeScript (strict), discord.js v14, Prisma + Postgres, deployed as a single Railway worker.
 
@@ -35,6 +35,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/going` | everyone | Your Going / Interested events (private reply) |
 | `/setup [channel] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
+| `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
 
 ## Setup
@@ -45,6 +46,8 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 2. No privileged intents are needed (the bot only uses the `Guilds` intent).
 3. Invite it with scopes `bot applications.commands` and permissions **View Channels, Send Messages, Send Messages in Threads, Embed Links, Create Public Threads, Manage Events** (permissions integer `317827599360`):
    `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=317827599360`
+
+**Name and profile picture.** On startup the bot renames itself to `BOT_NAME` (default `Big Tex`) if its username is different. To change the picture, run `/avatar image:<upload>` in any server the bot is in. Only the app's owner (or its team members, or anyone listed in `BOT_OWNER_IDS`) can use it. You can also set both on the Bot page of the Developer Portal. Discord rate-limits username and avatar changes (about two per hour).
 
 ### 2. SeatGeek
 
@@ -99,6 +102,8 @@ Notes:
 | `REMINDER_CRON` | `15 * * * *` | Hourly |
 | `LOOKAHEAD_DAYS` | `90` | How far ahead to ingest (auto posts only go 45 days out) |
 | `LOG_LEVEL` | `info` | pino level |
+| `BOT_NAME` | `Big Tex` | Bot username, applied on startup |
+| `BOT_OWNER_IDS` | app owner/team | Who may run `/avatar` |
 
 All cron schedules run in `America/Chicago`.
 
