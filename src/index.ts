@@ -7,6 +7,7 @@ import { logger } from "./logger.js";
 import { alert } from "./discord/alerts.js";
 import { handleRsvpButton } from "./discord/buttons.js";
 import { handleGreeting } from "./discord/greetings.js";
+import { handleRoleComponent } from "./discord/roles.js";
 import { commandsByName } from "./discord/commands/index.js";
 import { ensureBotName } from "./discord/profile.js";
 import { digestJob } from "./jobs/digest.js";
@@ -27,8 +28,11 @@ async function onInteraction(interaction: Interaction): Promise<void> {
     if (interaction.isChatInputCommand()) {
       const command = commandsByName.get(interaction.commandName);
       if (command) await command.execute(interaction);
-    } else if (interaction.isButton()) {
-      await handleRsvpButton(interaction);
+    } else if (interaction.isMessageComponent()) {
+      const handled =
+        (await handleRoleComponent(interaction)) || (interaction.isButton() && (await handleRsvpButton(interaction)));
+      // Old messages can carry components we no longer handle; answer so Discord doesn't show a timeout.
+      if (!handled) await interaction.reply({ content: "That button doesn't do anything anymore.", flags: MessageFlags.Ephemeral });
     }
   } catch (err) {
     logger.error({ err, interaction: interaction.id }, "interaction failed");
