@@ -34,8 +34,6 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/weekend` | everyone | Friday through Sunday |
 | `/going` | everyone | Your Going / Interested events (private reply) |
 | `/setup [channel] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
-| `/populate [count] [refresh]` | Manage Server | Fetch feeds now and post up to `count` (default 10) events the server hasn't seen yet, ignoring the daily cap |
-| `/roles-setup [channel] [politics-channel]` | Manage Server | Create 17 color roles and a Politics role, hide #politics from everyone without the role, and post a role picker in #roles |
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
 | `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
@@ -47,8 +45,8 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 
 1. Create an app at <https://discord.com/developers/applications>, add a Bot, copy the token (`DISCORD_TOKEN`) and Application ID (`DISCORD_CLIENT_ID`).
 2. No privileged intents are needed. The bot uses `Guilds`, `GuildMessages` and `DirectMessages`; without Message Content it only sees the text of messages that mention it or DM it, which is all the greeting needs.
-3. Invite it with scopes `bot applications.commands` and permissions **View Channels, Send Messages, Send Messages in Threads, Embed Links, Create Public Threads, Manage Events, Manage Roles** (permissions integer `318096034816`):
-   `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=318096034816`
+3. Invite it with scopes `bot applications.commands` and permissions **View Channels, Send Messages, Send Messages in Threads, Embed Links, Create Public Threads, Manage Events** (permissions integer `317827599360`):
+   `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=317827599360`
 
 **Name and profile picture.** On startup the bot renames itself to `BOT_NAME` (default `Big Tex`) if its username is different. To change the picture, run `/avatar image:<upload>` in any server the bot is in. Only the app's owner (or its team members, or anyone listed in `BOT_OWNER_IDS`) can use it. You can also set both on the Bot page of the Developer Portal. Discord rate-limits username and avatar changes (about two per hour).
 
@@ -68,7 +66,7 @@ pnpm register                   # slash commands (instant if DISCORD_DEV_GUILD_I
 pnpm dev                        # tsx watch
 ```
 
-Then in your test server run `/setup channel:#events`, then `/populate` to fill the channel right away. The bot also polls on boot and every 6 hours.
+Then in your test server run `/setup channel:#events`. The bot polls on boot and every 6 hours.
 
 Handy without Discord: `pnpm poll:once` (or `--no-seatgeek`) ingests and prints the top-scoring events, for tuning `score.ts`.
 
