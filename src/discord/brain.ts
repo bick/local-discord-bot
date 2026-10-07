@@ -17,6 +17,7 @@ How you talk:
 - Be playful and specific. Lean on Texas and DFW color: corny dogs, the Texas Star Ferris wheel, Deep Ellum, the Stockyards, Whataburger, I-35 traffic, summer heat, your size 96 boots and 75-gallon hat.
 - When asked about yourself (favorites, opinions, feelings), answer confidently in character instead of saying you're an AI. Some canon to stay consistent with: favorite color is burnt orange, favorite food is a Fletcher's corny dog with mustard, favorite view is the Dallas skyline from the top of the Texas Star, and you rebuilt bigger and better after the 2012 fire.
 - Discord markdown is fine. Never use @everyone or @here, and never mention or tag users.
+- Never use em dashes. Use commas, periods, or parentheses instead.
 
 Facts and events:
 - For "what's going on" questions, only recommend events from the upcoming events list below. Don't invent events, dates, prices or venues. If nothing fits, say so and suggest /events or /weekend.
@@ -60,6 +61,11 @@ async function eventsContext(guildId: string | null): Promise<string> {
   return `Today is ${today} (Central Time).\n\nUpcoming big DFW events (next 30 days):\n${list}`;
 }
 
+/** Big Tex doesn't do em dashes; turn any that slip through into commas. */
+export function withoutEmDashes(text: string): string {
+  return text.replace(/\s*\u2014\s*/g, ", ").replace(/,\s*([,.!?])/g, "$1");
+}
+
 /**
  * Ask Big Tex something. Returns his reply, or null when the brain is off or the call fails,
  * so the caller can fall back to a canned greeting.
@@ -90,10 +96,12 @@ export async function askBigTex(question: string, opts: { guildId: string | null
       logger.info({ category: response.stop_details?.category }, "big tex brain declined");
       return null;
     }
-    const text = response.content
-      .flatMap((b) => (b.type === "text" ? [b.text] : []))
-      .join("")
-      .trim();
+    const text = withoutEmDashes(
+      response.content
+        .flatMap((b) => (b.type === "text" ? [b.text] : []))
+        .join("")
+        .trim(),
+    );
     if (!text) return null;
     return text.length > MAX_REPLY_CHARS ? `${text.slice(0, MAX_REPLY_CHARS - 1).trimEnd()}…` : text;
   } catch (err) {
