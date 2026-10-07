@@ -7,6 +7,7 @@ import { logger } from "./logger.js";
 import { alert } from "./discord/alerts.js";
 import { handleRsvpButton } from "./discord/buttons.js";
 import { handleGreeting } from "./discord/greetings.js";
+import { handleRoleComponent } from "./discord/roles.js";
 import { commandsByName } from "./discord/commands/index.js";
 import { ensureBotName } from "./discord/profile.js";
 import { digestJob } from "./jobs/digest.js";
@@ -28,7 +29,9 @@ async function onInteraction(interaction: Interaction): Promise<void> {
       const command = commandsByName.get(interaction.commandName);
       if (command) await command.execute(interaction);
     } else if (interaction.isButton()) {
-      await handleRsvpButton(interaction);
+      if (!(await handleRoleComponent(interaction))) await handleRsvpButton(interaction);
+    } else if (interaction.isStringSelectMenu()) {
+      await handleRoleComponent(interaction);
     }
   } catch (err) {
     logger.error({ err, interaction: interaction.id }, "interaction failed");
