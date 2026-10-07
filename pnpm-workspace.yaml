@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - vite@7.3.7
