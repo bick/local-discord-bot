@@ -51,7 +51,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 
 ### 2. SeatGeek
 
-Register an app at <https://seatgeek.com/account/develop> and copy the client ID (`SEATGEEK_CLIENT_ID`).
+Register an app at <https://seatgeek.com/account/develop> and copy the client ID (`SEATGEEK_CLIENT_ID`). Optional: without it the bot runs on calendar feeds only.
 
 ### 3. Local development
 
@@ -84,7 +84,7 @@ TEST_DATABASE_URL=postgresql://.../dfw_events_test pnpm test
 1. New project → add **Postgres**.
 2. Add a service from this GitHub repo. Variables:
    - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`
-   - `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `SEATGEEK_CLIENT_ID`
+   - `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, optional `SEATGEEK_CLIENT_ID`
    - optional `BOT_LOG_CHANNEL_ID` (private `#bot-logs` channel for poll and job errors)
 3. `railway.json` builds with `pnpm build` and starts with `pnpm start`, which runs `prisma migrate deploy` before booting.
 4. Once: `railway run pnpm db:seed` and `railway run pnpm register --global`.

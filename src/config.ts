@@ -4,7 +4,8 @@ const EnvSchema = z.object({
   DISCORD_TOKEN: z.string().min(1),
   DISCORD_CLIENT_ID: z.string().min(1),
   DISCORD_DEV_GUILD_ID: z.string().optional(),
-  SEATGEEK_CLIENT_ID: z.string().min(1),
+  /** Optional: without it the bot only ingests calendar feeds. */
+  SEATGEEK_CLIENT_ID: z.string().min(1).optional(),
   DATABASE_URL: z.string().url(),
   TZ: z.literal("America/Chicago").default("America/Chicago"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),

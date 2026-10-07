@@ -13,6 +13,7 @@ import { pollJob } from "./jobs/poll.js";
 import { remindersJob } from "./jobs/reminders.js";
 
 const cfg = config(); // fail fast on bad env
+if (!cfg.SEATGEEK_CLIENT_ID) logger.warn("SEATGEEK_CLIENT_ID not set; ingesting calendar feeds only");
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 

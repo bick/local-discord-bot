@@ -5,7 +5,7 @@
 import { prisma } from "../src/db.js";
 import { buildSources, runIngest } from "../src/pipeline/ingest.js";
 
-// Only needs DATABASE_URL (and SEATGEEK_CLIENT_ID unless --no-seatgeek); no Discord credentials.
+// Only needs DATABASE_URL (SEATGEEK_CLIENT_ID optional); no Discord credentials.
 const seatgeekClientId = process.argv.includes("--no-seatgeek") ? null : process.env.SEATGEEK_CLIENT_ID || null;
 if (seatgeekClientId === null && !process.argv.includes("--no-seatgeek")) console.warn("SEATGEEK_CLIENT_ID not set; calendar feeds only");
 const sources = await buildSources({ seatgeekClientId });
