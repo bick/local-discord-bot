@@ -34,6 +34,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/weekend` | everyone | Friday through Sunday |
 | `/going` | everyone | Your Going / Interested events (private reply) |
 | `/setup [channel] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
+| `/populate [count] [refresh]` | Manage Server | Fetch feeds now and post up to `count` (default 10) events the server hasn't seen yet, ignoring the daily cap |
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
 | `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
@@ -65,7 +66,7 @@ pnpm register                   # slash commands (instant if DISCORD_DEV_GUILD_I
 pnpm dev                        # tsx watch
 ```
 
-Then in your test server run `/setup channel:#events`. The bot polls on boot and every 6 hours.
+Then in your test server run `/setup channel:#events`, then `/populate` to fill the channel right away. The bot also polls on boot and every 6 hours.
 
 Handy without Discord: `pnpm poll:once` (or `--no-seatgeek`) ingests and prints the top-scoring events, for tuning `score.ts`.
 

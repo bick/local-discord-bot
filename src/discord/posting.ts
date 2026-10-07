@@ -56,33 +56,52 @@ export async function postEvent(guild: Guild, channel: GuildTextBasedChannel, se
   });
 }
 
+/** Guilds with a posting run in flight, so the poll job and /populate can't double-post. */
+const postingGuilds = new Set<string>();
+
+export type GuildPostResult = { status: "posted"; posted: number } | { status: "busy" | "no-guild" | "no-channel" };
+
+/** Post up to `limit` new candidates to one guild's events channel. */
+export async function postToGuild(client: Client, settings: GuildSettings, limit: number): Promise<GuildPostResult> {
+  const guild = client.guilds.cache.get(settings.guildId);
+  if (!guild) return { status: "no-guild" };
+  const channel = settings.eventsChannelId ? await resolveTextChannel(client, settings.eventsChannelId) : null;
+  if (!channel) {
+    logger.warn({ guildId: guild.id }, "events channel missing or not text based");
+    return { status: "no-channel" };
+  }
+  if (postingGuilds.has(guild.id)) return { status: "busy" };
+
+  postingGuilds.add(guild.id);
+  try {
+    let posted = 0;
+    const candidates = limit > 0 ? (await postCandidates(settings)).slice(0, limit) : [];
+    for (const event of candidates) {
+      try {
+        await postEvent(guild, channel, settings, event);
+        posted++;
+      } catch (err) {
+        logger.error({ err, guildId: guild.id, eventId: event.id }, "failed to post event");
+      }
+    }
+    return { status: "posted", posted };
+  } finally {
+    postingGuilds.delete(guild.id);
+  }
+}
+
 /** Post anything new above threshold to every configured guild, respecting maxPostsPerDay. */
 export async function postNewEvents(client: Client): Promise<number> {
   const guilds = await prisma.guildSettings.findMany({ where: { eventsChannelId: { not: null } } });
   let total = 0;
 
   for (const settings of guilds) {
-    const guild = client.guilds.cache.get(settings.guildId);
-    if (!guild || !settings.eventsChannelId) continue;
-    const channel = await resolveTextChannel(client, settings.eventsChannelId);
-    if (!channel) {
-      logger.warn({ guildId: guild.id }, "events channel missing or not text based");
-      continue;
-    }
-
-    const postedToday = await prisma.post.count({ where: { guildId: guild.id, postedAt: { gte: chicagoMidnight(chicagoDay(new Date())) } } });
+    const postedToday = await prisma.post.count({ where: { guildId: settings.guildId, postedAt: { gte: chicagoMidnight(chicagoDay(new Date())) } } });
     const budget = settings.maxPostsPerDay - postedToday;
     if (budget <= 0) continue;
 
-    const candidates = (await postCandidates(settings)).slice(0, budget);
-    for (const event of candidates) {
-      try {
-        await postEvent(guild, channel, settings, event);
-        total++;
-      } catch (err) {
-        logger.error({ err, guildId: guild.id, eventId: event.id }, "failed to post event");
-      }
-    }
+    const result = await postToGuild(client, settings, budget);
+    if (result.status === "posted") total += result.posted;
   }
   return total;
 }
