@@ -1,6 +1,6 @@
 /**
  * Integration test against a real Postgres. Runs only when TEST_DATABASE_URL is set:
- *   TEST_DATABASE_URL=postgresql://... npx prisma migrate deploy && npm test
+ *   TEST_DATABASE_URL=postgresql://... pnpm prisma migrate deploy && pnpm test
  * The test database is wiped, so never point this at real data.
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";

@@ -58,25 +58,25 @@ Register an app at <https://seatgeek.com/account/develop> and copy the client ID
 ```bash
 cp .env.example .env            # fill in the values
 docker run -d --name dfw-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=dfw_events -p 5432:5432 postgres:16
-npm install
-npm run db:migrate              # applies prisma/migrations
-npm run db:seed                 # curated festival feed
-npm run register                # slash commands (instant if DISCORD_DEV_GUILD_ID is set)
-npm run dev                     # tsx watch
+pnpm install
+pnpm db:migrate                 # applies prisma/migrations
+pnpm db:seed                    # curated festival feed
+pnpm register                   # slash commands (instant if DISCORD_DEV_GUILD_ID is set)
+pnpm dev                        # tsx watch
 ```
 
 Then in your test server run `/setup channel:#events`. The bot polls on boot and every 6 hours.
 
-Handy without Discord: `npm run poll:once` (or `-- --no-seatgeek`) ingests and prints the top-scoring events, for tuning `score.ts`.
+Handy without Discord: `pnpm poll:once` (or `--no-seatgeek`) ingests and prints the top-scoring events, for tuning `score.ts`.
 
 ### 4. Tests
 
 ```bash
-npm test                        # unit tests
+pnpm test                       # unit tests
 # integration tests against a throwaway database (it gets TRUNCATEd):
 createdb dfw_events_test
-DATABASE_URL=postgresql://.../dfw_events_test npx prisma migrate deploy
-TEST_DATABASE_URL=postgresql://.../dfw_events_test npm test
+DATABASE_URL=postgresql://.../dfw_events_test pnpm prisma migrate deploy
+TEST_DATABASE_URL=postgresql://.../dfw_events_test pnpm test
 ```
 
 ## Deploying to Railway
@@ -86,8 +86,8 @@ TEST_DATABASE_URL=postgresql://.../dfw_events_test npm test
    - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`
    - `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `SEATGEEK_CLIENT_ID`
    - optional `BOT_LOG_CHANNEL_ID` (private `#bot-logs` channel for poll and job errors)
-3. `railway.json` builds with `npm run build` and starts with `npm run start`, which runs `prisma migrate deploy` before booting.
-4. Once: `railway run npm run db:seed` and `railway run npm run register -- --global`.
+3. `railway.json` builds with `pnpm build` and starts with `pnpm start`, which runs `prisma migrate deploy` before booting.
+4. Once: `railway run pnpm db:seed` and `railway run pnpm register --global`.
 
 Notes:
 - **Run exactly one replica.** Two replicas means two gateway connections and duplicate cron jobs (double posts). `railway.json` pins `numReplicas: 1`.

@@ -4,6 +4,7 @@
   "private": true,
   "description": "Discord bot that finds big Dallas/Fort Worth events and gets people to go together",
   "type": "module",
+  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=20"
   },
@@ -37,5 +38,13 @@
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vitest": "^3.2.7"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Run one ingest pass without connecting to Discord and print what would be posted.
- * Useful for tuning the score: `npm run poll:once`. Pass --no-seatgeek to skip SeatGeek.
+ * Useful for tuning the score: `pnpm poll:once`. Pass --no-seatgeek to skip SeatGeek.
  */
 import { prisma } from "../src/db.js";
 import { buildSources, runIngest } from "../src/pipeline/ingest.js";
