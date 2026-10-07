@@ -6,7 +6,7 @@ import { logger } from "../logger.js";
 import { whereText } from "./embeds.js";
 import { guildMinScore, upcomingBigEvents } from "./queries.js";
 
-const MODEL = "claude-opus-5-5";
+const MODEL = "claude-haiku-4-5"; // short in-character chat; no need for a bigger model
 const MAX_QUESTION_CHARS = 600;
 const MAX_REPLY_CHARS = 1900; // Discord caps messages at 2000
 
@@ -76,12 +76,9 @@ export async function askBigTex(question: string, opts: { guildId: string | null
     .join("\n\n");
 
   try {
-    const response = await anthropic.beta.messages.create({
+    const response = await anthropic.messages.create({
       model: MODEL,
-      max_tokens: 2000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      output_config: { effort: "low" }, // quick chat replies don't need deep thinking
+      max_tokens: 600, // ~120-word replies; caps the cost of any single answer
       system: [
         { type: "text", text: PERSONA },
         { type: "text", text: await eventsContext(opts.guildId) },
