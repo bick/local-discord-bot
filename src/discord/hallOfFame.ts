@@ -5,7 +5,7 @@ import { logger } from "../logger.js";
 
 export const HOF_CHANNEL_NAME = "hall-of-fame";
 export const HOF_EMOJI = "⭐";
-export const HOF_THRESHOLD = 7;
+export const HOF_THRESHOLD = 5;
 
 /**
  * When a message reaches HOF_THRESHOLD ⭐ reactions, forward it to #hall-of-fame (once).
