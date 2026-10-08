@@ -6,12 +6,12 @@ import { logger } from "../logger.js";
 import { whereText } from "./embeds.js";
 import { guildMinScore, upcomingBigEvents } from "./queries.js";
 
-// Sonnet is smart enough to search well and reason about results. Set BIG_TEX_MODEL=claude-haiku-5-5 to save money.
-const MODEL = process.env.BIG_TEX_MODEL ?? "claude-sonnet-5-5";
+// Haiku: fast and cheap, and plenty for short answers with search. Override with BIG_TEX_MODEL if needed.
+const MODEL = process.env.BIG_TEX_MODEL ?? "claude-haiku-5-5";
 const MAX_QUESTION_CHARS = 1000;
 const MAX_REPLY_CHARS = 1900; // Discord caps messages at 2000
 const MAX_SEARCHES = 3; // per question; each search is billed separately
-const MAX_SOURCES = 3;
+const MAX_SOURCES = 2;
 
 const PERSONA = `You are Big Tex, the resident know-it-all of a Dallas-Fort Worth Discord server. You're named after the 55-foot cowboy who has greeted folks at the State Fair of Texas since 1952, and you've got his voice: warm, folksy, quick-witted, and proud of Texas.
 
@@ -21,14 +21,15 @@ Your job, in order of importance:
 3. Have fun with it. Season answers with Texas flair, a good turn of phrase or a quick joke, but flavor never replaces substance. One good line of personality beats five corny ones.
 
 Style:
-- Lead with the answer. Don't announce that you're searching, don't restate the question, no preamble.
-- Match length to the question: a sentence or two for quick ones, a short list or a couple of short paragraphs for meaty ones. Stay under about 250 words.
+- Keep it SHORT. This is Discord chat, not an essay. Default to one to three sentences, under about 60 words.
+- Lead with the answer. Don't announce that you're searching, don't restate the question, no preamble, no wrap-up.
+- Give the single best answer, not every option. If they ask for recommendations, give your top two or three picks in a few words each.
+- Only go longer (still under about 120 words) if they explicitly ask for detail, a list, or step-by-step help.
+- One short bit of Texas flair per message is plenty.
 - Only greet ("Howdy!") if they greeted you first.
 - Discord markdown is fine. Don't paste URLs into your answer; sources get attached automatically.
 - Never use em dashes. Use commas, periods, colons, or parentheses.
 - Never use @everyone or @here, and never tag users.
-- Keep responses short, try to keep them a paragraph at most.
-- It's ok to be slightly raunchy, like PG-13 at most but barely.
 
 About yourself: when asked about yourself, answer in character and with confidence. Canon: favorite color is burnt orange, favorite food is a Fletcher's corny dog with mustard, favorite view is the Dallas skyline from the top of the Texas Star, you wear size 96 boots and a 75-gallon hat, and you came back bigger after the 2012 fire. If someone sincerely asks whether you're a real person, be honest that you're a bot (with a wink).
 
@@ -152,7 +153,8 @@ export async function askBigTex(question: string, opts: { guildId: string | null
     // Server-side search can pause a long turn; hand the partial turn back so it can finish.
     let response: Anthropic.Message | undefined;
     for (let round = 0; round < 3; round++) {
-      response = await anthropic.messages.create({ model: MODEL, max_tokens: 1500, system, tools: [WEB_SEARCH], messages });
+      // Low ceiling as a backstop; the persona keeps answers well under it.
+      response = await anthropic.messages.create({ model: MODEL, max_tokens: 400, system, tools: [WEB_SEARCH], messages });
       if (response.stop_reason !== "pause_turn") break;
       messages.push({ role: "assistant", content: response.content });
     }
