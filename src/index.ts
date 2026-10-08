@@ -8,7 +8,7 @@ import { alert } from "./discord/alerts.js";
 import { handleRsvpButton } from "./discord/buttons.js";
 import { handleGreeting } from "./discord/greetings.js";
 import { handleStarReaction } from "./discord/hallOfFame.js";
-import { handleRoleComponent } from "./discord/roles.js";
+import { addNsfwToRolePanels, handleRoleComponent } from "./discord/roles.js";
 import { commandsByName } from "./discord/commands/index.js";
 import { ensureBotName } from "./discord/profile.js";
 import { digestJob } from "./jobs/digest.js";
@@ -74,6 +74,7 @@ function startHealthServer(port: number): http.Server {
 client.once(Events.ClientReady, async (c) => {
   logger.info({ user: c.user.tag, guilds: c.guilds.cache.size }, "logged in");
   await ensureBotName(c);
+  await addNsfwToRolePanels(c);
   for (const guildId of c.guilds.cache.keys()) {
     await prisma.guildSettings.upsert({ where: { guildId }, create: { guildId }, update: {} });
   }
