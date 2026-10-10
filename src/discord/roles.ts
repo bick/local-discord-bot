@@ -35,7 +35,7 @@ const COLOR_EMOJI: Record<string, string> = {
   Purple: "🟣",
   Lavender: "💜",
   Pink: "🌸",
-  "Cups Pink": "🎀",
+  "Cups Pink": "🥤",
   Maroon: "🍷",
   Brown: "🟤",
   White: "⚪",
