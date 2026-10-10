@@ -9,6 +9,7 @@ import {
   MessageFlags,
   PermissionFlagsBits,
   RESTJSONErrorCodes,
+  StringSelectMenuBuilder,
   type Client,
   type Guild,
   type MessageActionRowComponentBuilder,
@@ -34,6 +35,7 @@ const COLOR_EMOJI: Record<string, string> = {
   Purple: "🟣",
   Lavender: "💜",
   Pink: "🌸",
+  "Cups Pink": "🎀",
   Maroon: "🍷",
   Brown: "🟤",
   White: "⚪",
@@ -41,6 +43,9 @@ const COLOR_EMOJI: Record<string, string> = {
 
 const COLOR_SELECT_ID = "roles:color";
 const POLITICS_BUTTON_ID = "roles:politics";
+
+/** Colors added after the panel was posted: each gets its role created and a menu option on boot, right after `after`. */
+const ADDED_COLORS = [{ name: "Cups Pink", color: 0xffd1dc, after: "Pink" }];
 
 /** Opt-in buttons on the panel: each toggles one role that unlocks hidden channels. */
 const TOGGLES: Record<string, { role: string; on: string; off: string; optIn: string; optOut: string }> = {
@@ -133,6 +138,11 @@ export async function addNsfwToRolePanels(client: Client<true>): Promise<void> {
     } catch (err) {
       logger.warn({ err, guildId: guild.id }, "could not add NSFW button to role panel");
     }
+    try {
+      await addColorsToRolePanel(guild);
+    } catch (err) {
+      logger.warn({ err, guildId: guild.id }, "could not add new colors to role panel");
+    }
   }
 }
 
@@ -170,4 +180,55 @@ async function addNsfwToRolePanel(guild: Guild): Promise<void> {
 
   await panel.edit({ embeds, components: rows });
   logger.info({ guildId: guild.id, messageId: panel.id }, "added NSFW button to role panel");
+}
+
+/** Creates any missing ADDED_COLORS roles and adds their options to the panel's color menu. Safe to run on every boot. */
+async function addColorsToRolePanel(guild: Guild): Promise<void> {
+  const channel = guild.channels.cache.find((c) => c.name === "roles" && c.type === ChannelType.GuildText);
+  if (!channel || channel.type !== ChannelType.GuildText) return;
+
+  const messages = await channel.messages.fetch({ limit: 50 });
+  const panel = messages.find(
+    (m) =>
+      m.author.id === guild.client.user.id &&
+      m.components.some((row) => row.type === ComponentType.ActionRow && row.components.some((c) => c.customId === COLOR_SELECT_ID)),
+  );
+  if (!panel) return;
+
+  const me = guild.members.me ?? (await guild.members.fetchMe());
+  if (me.permissions.has(PermissionFlagsBits.ManageRoles)) {
+    for (const c of ADDED_COLORS) {
+      if (guild.roles.cache.some((r) => r.name === c.name)) continue;
+      const neighbor = guild.roles.cache.find((r) => r.name === c.after);
+      await guild.roles.create({
+        name: c.name,
+        color: c.color,
+        permissions: [],
+        mentionable: false,
+        position: neighbor?.position,
+        reason: "Big Tex: color role for #roles",
+      });
+    }
+  }
+
+  let changed = false;
+  const rows = panel.components
+    .filter((row) => row.type === ComponentType.ActionRow)
+    .map((row) => {
+      const builder = ActionRowBuilder.from<MessageActionRowComponentBuilder>(row);
+      const select = builder.components[0];
+      if (!(select instanceof StringSelectMenuBuilder) || select.data.custom_id !== COLOR_SELECT_ID) return builder;
+      for (const c of ADDED_COLORS) {
+        if (select.options.some((o) => o.data.value === c.name)) continue;
+        const i = select.options.findIndex((o) => o.data.value === c.after);
+        const at = i === -1 ? select.options.findIndex((o) => o.data.value === NO_COLOR) : i + 1;
+        select.spliceOptions(at === -1 ? select.options.length : at, 0, { label: c.name, value: c.name, emoji: { name: COLOR_EMOJI[c.name] } });
+        changed = true;
+      }
+      return builder;
+    });
+  if (!changed) return;
+
+  await panel.edit({ components: rows });
+  logger.info({ guildId: guild.id, messageId: panel.id }, "added new colors to role panel");
 }
