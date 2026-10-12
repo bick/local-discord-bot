@@ -109,6 +109,7 @@ model Rsvp {
 model GuildSettings {
   guildId         String     @id
   eventsChannelId String?
+  eventsForumId   String? // forum where each new post becomes a Discord Scheduled Event
   minBigScore     Int        @default(60)
   categories      Category[]
   maxPostsPerDay  Int        @default(5)
@@ -121,4 +122,11 @@ model HallOfFameEntry {
   channelId    String
   hofMessageId String? // the forward in #hall-of-fame
   createdAt    DateTime @default(now())
+}
+
+model ForumEvent {
+  threadId         String   @id // the forum post
+  guildId          String
+  scheduledEventId String? // null while the event is being created
+  createdAt        DateTime @default(now())
 }

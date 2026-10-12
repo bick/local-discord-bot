@@ -24,6 +24,9 @@ export const setup: Command = {
     .addChannelOption((o) =>
       o.setName("channel").setDescription("Channel for event posts and the weekend digest").addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement),
     )
+    .addChannelOption((o) =>
+      o.setName("events-forum").setDescription("Forum where each new post becomes a server event (date goes in the title)").addChannelTypes(ChannelType.GuildForum),
+    )
     .addIntegerOption((o) => o.setName("min-score").setDescription("Only auto-post events scoring at least this (0-100, default 60)").setMinValue(0).setMaxValue(100))
     .addIntegerOption((o) => o.setName("max-posts-per-day").setDescription("Cap on auto posts per day (default 5)").setMinValue(0).setMaxValue(50))
     .addBooleanOption((o) => o.setName("digest").setDescription("Send the Thursday 'this weekend in DFW' digest"))
@@ -33,6 +36,7 @@ export const setup: Command = {
   async execute(interaction) {
     if (!interaction.guildId) return;
     const channel = interaction.options.getChannel("channel");
+    const forum = interaction.options.getChannel("events-forum");
     const minBigScore = interaction.options.getInteger("min-score");
     const maxPostsPerDay = interaction.options.getInteger("max-posts-per-day");
     const digestEnabled = interaction.options.getBoolean("digest");
@@ -50,6 +54,7 @@ export const setup: Command = {
 
     const data = {
       ...(channel ? { eventsChannelId: channel.id } : {}),
+      ...(forum ? { eventsForumId: forum.id } : {}),
       ...(minBigScore != null ? { minBigScore } : {}),
       ...(maxPostsPerDay != null ? { maxPostsPerDay } : {}),
       ...(digestEnabled != null ? { digestEnabled } : {}),
@@ -66,6 +71,7 @@ export const setup: Command = {
       content: [
         "**Big Tex settings**",
         `Channel: ${s.eventsChannelId ? `<#${s.eventsChannelId}>` : "not set (use `/setup channel:#events`)"}`,
+        `Events forum: ${s.eventsForumId ? `<#${s.eventsForumId}>` : "not set (use `/setup events-forum:#plans`)"}`,
         `Min score: ${s.minBigScore}`,
         `Max posts per day: ${s.maxPostsPerDay}`,
         `Weekend digest: ${s.digestEnabled ? "on" : "off"}`,

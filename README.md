@@ -34,8 +34,10 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/weekend` | everyone | Friday through Sunday |
 | `/topic [category]` | everyone | A fun conversation starter (would you rather, hot takes, hypotheticals, nostalgia, get to know you) |
 | ⭐ reactions | everyone | A message that gets 5 or more ⭐ reactions is forwarded to `#hall-of-fame` (once). Create a text channel with that exact name to turn it on |
+| Events forum posts | everyone | Each new post in the forum picked with `/setup events-forum:` becomes a Discord Scheduled Event. The date and time come from the post title (the bot can't read post bodies), e.g. `Rangers game Sat 7pm @ Globe Life Field`; text after `@` is the location. Renaming the post updates the event, deleting it removes the event, and a title with no date gets a reply asking for one |
+| `#server-suggestions` | everyone | Every new suggestion gets 👍 and 👎 reactions to vote with. Works as a text channel (top-level messages, not replies) or a forum (each post). Turned on by the channel name |
 | `/going` | everyone | Your Going / Interested events (private reply) |
-| `/setup [channel] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
+| `/setup [channel] [events-forum] [min-score] [max-posts-per-day] [digest] [categories]` | Manage Server | Per-server config |
 | `/feeds add\|list\|enable\|disable` | Manage Server | Manage calendar feeds (test-fetches before saving) |
 | `/avatar image:` | bot owner | Change the bot's profile picture |
 | `/ping` | everyone | Health check |
@@ -47,8 +49,8 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 
 1. Create an app at <https://discord.com/developers/applications>, add a Bot, copy the token (`DISCORD_TOKEN`) and Application ID (`DISCORD_CLIENT_ID`).
 2. No privileged intents are needed. The bot uses `Guilds`, `GuildMessages` and `DirectMessages`; without Message Content it only sees the text of messages that mention it or DM it, which is all the greeting needs.
-3. Invite it with scopes `bot applications.commands` and permissions **View Channels, Send Messages, Send Messages in Threads, Embed Links, Create Public Threads, Manage Events** (permissions integer `317827599360`):
-   `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=317827599360`
+3. Invite it with scopes `bot applications.commands` and permissions **View Channels, Send Messages, Send Messages in Threads, Embed Links, Add Reactions, Read Message History, Create Public Threads, Manage Events** (permissions integer `317827664960`):
+   `https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot+applications.commands&permissions=317827664960`
 
 **Name and profile picture.** On startup the bot renames itself to `BOT_NAME` (default `Big Tex`) if its username is different. To change the picture, run `/avatar image:<upload>` in any server the bot is in. Only the app's owner (or its team members, or anyone listed in `BOT_OWNER_IDS`) can use it. You can also set both on the Bot page of the Developer Portal. Discord rate-limits username and avatar changes (about two per hour).
 

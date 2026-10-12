@@ -8,6 +8,8 @@ import { alert } from "./discord/alerts.js";
 import { handleRsvpButton } from "./discord/buttons.js";
 import { handleGreeting } from "./discord/greetings.js";
 import { handleStarReaction } from "./discord/hallOfFame.js";
+import { handleForumThreadCreate, handleForumThreadDelete, handleForumThreadUpdate } from "./discord/forumEvents.js";
+import { handleSuggestion } from "./discord/suggestions.js";
 import { addNsfwToRolePanels, handleRoleComponent } from "./discord/roles.js";
 import { commandsByName } from "./discord/commands/index.js";
 import { ensureBotName } from "./discord/profile.js";
@@ -92,6 +94,10 @@ client.once(Events.ClientReady, async (c) => {
 
 client.on(Events.InteractionCreate, (i) => void onInteraction(i));
 client.on(Events.MessageCreate, (m) => void handleGreeting(m).catch((err) => logger.warn({ err }, "greeting failed")));
+client.on(Events.MessageCreate, (m) => void handleSuggestion(m).catch((err) => logger.warn({ err }, "suggestion votes failed")));
+client.on(Events.ThreadCreate, (t, isNew) => void handleForumThreadCreate(t, isNew).catch((err) => logger.warn({ err }, "forum event failed")));
+client.on(Events.ThreadUpdate, (a, b) => void handleForumThreadUpdate(a, b).catch((err) => logger.warn({ err }, "forum event update failed")));
+client.on(Events.ThreadDelete, (t) => void handleForumThreadDelete(t).catch((err) => logger.warn({ err }, "forum event delete failed")));
 
 client.on(Events.MessageReactionAdd, (r) => void handleStarReaction(r).catch((err) => logger.warn({ err }, "hall of fame failed")));
 

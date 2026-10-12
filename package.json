@@ -24,6 +24,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
     "@prisma/client": "^6.19.3",
+    "chrono-node": "2.10.1",
     "croner": "^10.0.1",
     "date-fns": "^4.4.0",
     "date-fns-tz": "^3.2.0",
