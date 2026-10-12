@@ -2,17 +2,16 @@ import { ButtonStyle, ChannelType, ComponentType, type MessageReaction, type Par
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db.js";
 import { logger } from "../logger.js";
+import { SUGGESTIONS_CHANNEL_NAME } from "./suggestions.js";
 
 export const HOF_CHANNEL_NAME = "hall-of-fame";
-export const HOF_EMOJI = "⭐";
-export const HOF_THRESHOLD = 5;
+export const HOF_THRESHOLD = 7;
 
 /**
- * When a message reaches HOF_THRESHOLD ⭐ reactions, forward it to #hall-of-fame (once).
+ * When any one emoji on a message reaches HOF_THRESHOLD reactions, forward it to #hall-of-fame (once).
  * Forwarding copies the message server-side, so we don't need the privileged Message Content intent.
  */
-export async function handleStarReaction(reaction: MessageReaction | PartialMessageReaction): Promise<void> {
-  if (reaction.emoji.name !== HOF_EMOJI) return;
+export async function handleHallOfFameReaction(reaction: MessageReaction | PartialMessageReaction): Promise<void> {
   if (reaction.partial) reaction = await reaction.fetch();
   if (reaction.count < HOF_THRESHOLD) return;
 
@@ -23,6 +22,9 @@ export async function handleStarReaction(reaction: MessageReaction | PartialMess
     (c): c is TextChannel => c.type === ChannelType.GuildText && c.name === HOF_CHANNEL_NAME,
   );
   if (!hof || message.channelId === hof.id) return;
+  // Suggestion votes are for voting, not fame (and the bot's own 👍 would count toward them).
+  const channelName = message.channel.isThread() ? message.channel.parent?.name : message.channel.name;
+  if (channelName === SUGGESTIONS_CHANNEL_NAME) return;
   // Don't leak NSFW channel content into a SFW hall of fame.
   if ("nsfw" in message.channel && message.channel.nsfw && !hof.nsfw) return;
 
@@ -36,7 +38,7 @@ export async function handleStarReaction(reaction: MessageReaction | PartialMess
 
   try {
     await hof.send({
-      content: `${HOF_EMOJI} **${reaction.count}** · ${message.author} in ${message.channel}`,
+      content: `${reaction.emoji} **${reaction.count}** · ${message.author} in ${message.channel}`,
       allowedMentions: { parse: [] },
       components: [
         { type: ComponentType.ActionRow, components: [{ type: ComponentType.Button, style: ButtonStyle.Link, label: "Jump to message", url: message.url }] },

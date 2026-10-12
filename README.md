@@ -33,7 +33,7 @@ hourly    remind  day-before ping to everyone Going; 3-days-out nudge when ≥3 
 | `/events [category] [city]` | everyone | Next 10 big events |
 | `/weekend` | everyone | Friday through Sunday |
 | `/topic [category]` | everyone | A fun conversation starter (would you rather, hot takes, hypotheticals, nostalgia, get to know you) |
-| ⭐ reactions | everyone | A message that gets 5 or more ⭐ reactions is forwarded to `#hall-of-fame` (once). Create a text channel with that exact name to turn it on |
+| Reactions | everyone | A message that gets 7 or more of any one emoji (⭐, 😂, a custom emoji, anything) is forwarded to `#hall-of-fame` (once). Create a text channel with that exact name to turn it on. Votes in `#server-suggestions` don't count |
 | Events forum posts | everyone | Each new post in the forum picked with `/setup events-forum:` becomes a Discord Scheduled Event. The date and time come from the post title (the bot can't read post bodies), e.g. `Rangers game Sat 7pm @ Globe Life Field`; text after `@` is the location. Renaming the post updates the event, deleting it removes the event, and a title with no date gets a reply asking for one |
 | `#server-suggestions` | everyone | Every new suggestion gets 👍 and 👎 reactions to vote with. Works as a text channel (top-level messages, not replies) or a forum (each post). Turned on by the channel name |
 | `/going` | everyone | Your Going / Interested events (private reply) |
